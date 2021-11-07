@@ -64,8 +64,12 @@ class Candidate : public ICollectable
 protected:
     bool invariant() const
     {
-        smatch m;
-        return _name.size() <= MAX_FIO_FIELD_LENGTH && _surname.size() <= MAX_FIO_FIELD_LENGTH && _age <= MAX_AGE && _age >= MIN_AGE && !_name.empty() && !_surname.empty();
+        return _name.size() <= MAX_FIO_FIELD_LENGTH 
+        && _surname.size() <= MAX_FIO_FIELD_LENGTH 
+        && _age <= MAX_AGE 
+        && _age >= MIN_AGE 
+        && !_name.empty() 
+        && !_surname.empty();
     }
 
 public:
