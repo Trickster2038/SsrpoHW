@@ -13,7 +13,7 @@ const size_t MAX_FIO_LENGTH = 50;
 const size_t MAX_FRACTION_LENGTH = 20;
 const uint MIN_AGE = 21;
 const uint MAX_AGE = 120;
-static const auto r = regex(R"([A-Z][a-z]{2,} [A-Z].[A-Z].)");
+static const auto FIO_REGEX = regex(R"([A-Z][a-z]{2,}_[A-Z].[A-Z].)");
 
 enum Fraction
 {
@@ -63,6 +63,7 @@ class Candidate : public ICollectable
 protected:
     bool invariant() const
     {
+        smatch m;
         return _fio.size() <= MAX_FIO_LENGTH && _age <= MAX_AGE && _age >= MIN_AGE && !_fio.empty();
     }
 
@@ -70,22 +71,20 @@ public:
     Candidate() = delete;
     Candidate(const Candidate &p) = delete;
     Candidate &operator=(const Candidate &p) = delete;
-// Candidate(const char*, long unsigned int, long unsigned int, const char*, long unsigned int)
     Candidate(const string &fio, uint age, uint income, Fraction fraction, uint voices) : _fio(fio), _age(age), _income(income), _fraction(fraction), _voices(voices)
     {
         assert(invariant());
     }
 
-    Candidate(const char* fio, long unsigned int age, long unsigned int income, const char* fraction, long unsigned int voices){
-        cout << "AUTO CONSTRUCTOR" << endl;
-        _fio = "Ggg";
-        _age = 30;
-        _income = 500;
-        _fraction = FRACTION_KPRF;
-        _voices = 100;
+    Candidate(const char *fio, long unsigned int age, long unsigned int income, const char *fraction, long unsigned int voices)
+    {
+        _fio = string(fio);
+        _age = age;
+        _income = income;
+        _fraction = Converter::toFraction(string(fraction));
+        _voices = voices;
         assert(invariant());
     }
-    
 
     const string &getFio() const { return _fio; }
     const uint getAge() const { return _age; }
@@ -171,11 +170,7 @@ bool performCommand(const vector<string> &args, ItemCollector &col)
             cerr << "Некорректное количество аргументов команды add" << endl;
             return false;
         }
-        // TODO
-        cout << "p1" << endl;
-        // col.addItem(make_shared<Candidate>("Ghjk", 30, 34, FRACTION_YABLOKO, 11));
-        col.addItem(make_shared<Candidate>(args[2].c_str(), stoul(args[3]), stoul(args[4]), args[5].c_str(), stoul(args[6])));
-        cout << "p2" << endl;
+        col.addItem(make_shared<Candidate>(args[1].c_str(), stoul(args[2]), stoul(args[3]), args[4].c_str(), stoul(args[5])));
         return true;
     }
 
@@ -198,10 +193,7 @@ bool performCommand(const vector<string> &args, ItemCollector &col)
             cerr << "Некорректное количество аргументов команды update" << endl;
             return false;
         }
-        //TODO
         col.updateItem(stoul(args[1]), make_shared<Candidate>(args[2].c_str(), stoul(args[3]), stoul(args[4]), args[5].c_str(), stoul(args[6])));
-        // string arg2(args[2].c_str(), MAX_FIO_LENGTH);
-        // col.updateItem(stoul(args[1]), make_shared<Candidate>(arg2, stoul(args[3]), stoul(args[4]), args[5].c_str(), stoul(args[6])));
         return true;
     }
 
