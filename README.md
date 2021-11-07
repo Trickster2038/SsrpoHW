@@ -52,6 +52,7 @@
 ## Адрес проекта
 
 Проект хранится в репозитории по адресу: [https://bmstu.codes/lsx/mstd/iu6-5-2021/iu6-52b-svastakhov-nvlapshin/hw](https://bmstu.codes/lsx/mstd/iu6-5-2021/iu6-52b-svastakhov-nvlapshin/hw).
+Описание классов хранится в репозитории по адресу: [https://lsx.pages.bmstu.codes/mstd/iu6-5-2021/iu6-52b-svastakhov-nvlapshin/hw/](https://lsx.pages.bmstu.codes/mstd/iu6-5-2021/iu6-52b-svastakhov-nvlapshin/hw/).
 
 ## Инвариант класса Candidate
 
