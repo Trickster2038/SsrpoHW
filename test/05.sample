@@ -1,0 +1,1 @@
+hw: hw.cpp:88: Candidate::Candidate(const char*, const char*, long unsigned int, long unsigned int, const char*, long unsigned int): Assertion `invariant()' failed.

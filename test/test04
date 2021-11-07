@@ -1,0 +1,5 @@
+#!/bin/bash
+
+rm hw.data
+./hw < test/04.test 2> test/04.result
+diff test/04.sample test/04.result
