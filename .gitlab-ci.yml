@@ -41,7 +41,7 @@ pages:
   # Прогоняем Doxygen
   - doxygen Doxyfile.cfg
   # Диплоим
-  - mv doc*/html/ public/
+  - mv doc/html/ public/
   artifacts:
     paths:
     - public
