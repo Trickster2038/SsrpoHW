@@ -13,7 +13,7 @@ const size_t MAX_FIO_FIELD_LENGTH = 30;
 const size_t MAX_FRACTION_LENGTH = 20;
 const uint MIN_AGE = 21;
 const uint MAX_AGE = 120;
-static const auto FIO_REGEX = regex(R"([A-Z][a-z]{2,}_[A-Z].[A-Z].)");
+// static const auto FIO_REGEX = regex(R"([A-Z][a-z]{2,}_[A-Z].[A-Z].)");
 
 enum Fraction
 {
