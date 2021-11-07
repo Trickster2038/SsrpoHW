@@ -5,21 +5,21 @@
 
 #include <fstream>
 
-template<typename T>
-T readNumber(std::istream& is)
+template <typename T>
+T readNumber(std::istream &is)
 {
     T result;
     is.read(reinterpret_cast<char *>(&result), sizeof(result));
     return result;
 }
 
-std::string readString(std::istream& is, size_t max_string_length)
+std::string readString(std::istream &is, size_t max_string_length)
 {
     uint16_t len = readNumber<uint16_t>(is);
 
     assert(len <= max_string_length);
 
-    char b[max_string_length+1];
+    char b[max_string_length + 1];
 
     if (len > 0)
         is.read(b, len);
@@ -29,13 +29,13 @@ std::string readString(std::istream& is, size_t max_string_length)
     return std::string(b);
 }
 
-template<typename T>
-void writeNumber(std::ostream& os, T i)
+template <typename T>
+void writeNumber(std::ostream &os, T i)
 {
-    os.write(reinterpret_cast<char *>(&i),sizeof(i));
+    os.write(reinterpret_cast<char *>(&i), sizeof(i));
 }
 
-void writeString(std::ostream& os, const std::string& s)
+void writeString(std::ostream &os, const std::string &s)
 {
     uint16_t len = s.length();
 
@@ -49,16 +49,16 @@ class ICollectable
 public:
     virtual ~ICollectable() = default;
 
-    virtual bool write(std::ostream& os) = 0;
+    virtual bool write(std::ostream &os) = 0;
 };
 
 class ACollector
 {
     std::vector<std::shared_ptr<ICollectable>> _items;
-    std::vector<bool>                          _removed_signs;
-    size_t                                     _removed_count = 0;
+    std::vector<bool> _removed_signs;
+    size_t _removed_count = 0;
 
-    bool    invariant() const
+    bool invariant() const
     {
         return _items.size() == _removed_signs.size() && _removed_count <= _items.size();
     }
@@ -66,7 +66,7 @@ class ACollector
 public:
     virtual ~ACollector() = default;
 
-    virtual std::shared_ptr<ICollectable> read(std::istream& is) = 0;
+    virtual std::shared_ptr<ICollectable> read(std::istream &is) = 0;
 
     size_t getSize() const { return _items.size(); }
 
@@ -98,11 +98,11 @@ public:
         if (!_removed_signs[index])
         {
             _removed_signs[index] = true;
-            _removed_count ++;
+            _removed_count++;
         }
     }
 
-    void updateItem(size_t index, const std::shared_ptr<ICollectable> & item)
+    void updateItem(size_t index, const std::shared_ptr<ICollectable> &item)
     {
         assert(index < _items.size());
 
@@ -118,7 +118,7 @@ public:
 
     bool loadCollection(const std::string file_name)
     {
-        std::ifstream ifs (file_name, std::ios_base::binary);
+        std::ifstream ifs(file_name, std::ios_base::binary);
 
         if (!ifs)
             return false;
@@ -127,7 +127,7 @@ public:
 
         _items.reserve(count);
 
-        for(size_t i=0; i < count; ++i)
+        for (size_t i = 0; i < count; ++i)
             addItem(read(ifs));
 
         assert(invariant());
@@ -139,7 +139,7 @@ public:
     {
         assert(invariant());
 
-        std::ofstream ofs (file_name, std::ios_base::binary);
+        std::ofstream ofs(file_name, std::ios_base::binary);
 
         if (!ofs)
             return false;
@@ -148,11 +148,10 @@ public:
 
         writeNumber(ofs, count);
 
-        for(size_t i=0; i < _items.size(); ++i)
+        for (size_t i = 0; i < _items.size(); ++i)
             if (!_removed_signs[i])
                 _items[i]->write(ofs);
 
         return ofs.good();
     }
-
 };
