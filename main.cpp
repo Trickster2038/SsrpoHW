@@ -9,7 +9,7 @@
 
 using namespace std;
 
-const size_t MAX_FIO_LENGTH = 50;
+const size_t MAX_FIO_FIELD_LENGTH = 30;
 const size_t MAX_FRACTION_LENGTH = 20;
 const uint MIN_AGE = 21;
 const uint MAX_AGE = 120;
@@ -54,7 +54,8 @@ public:
 
 class Candidate : public ICollectable
 {
-    string _fio;
+    string _name;
+    string _surname;
     uint _age;
     uint _income;
     Fraction _fraction;
@@ -64,21 +65,22 @@ protected:
     bool invariant() const
     {
         smatch m;
-        return _fio.size() <= MAX_FIO_LENGTH && _age <= MAX_AGE && _age >= MIN_AGE && !_fio.empty();
+        return _name.size() <= MAX_FIO_FIELD_LENGTH && _surname.size() <= MAX_FIO_FIELD_LENGTH && _age <= MAX_AGE && _age >= MIN_AGE && !_name.empty() && !_surname.empty();
     }
 
 public:
     Candidate() = delete;
     Candidate(const Candidate &p) = delete;
     Candidate &operator=(const Candidate &p) = delete;
-    Candidate(const string &fio, uint age, uint income, Fraction fraction, uint voices) : _fio(fio), _age(age), _income(income), _fraction(fraction), _voices(voices)
+    Candidate(const string &name, const string &surname, uint age, uint income, Fraction fraction, uint voices) : _name(name), _surname(surname), _age(age), _income(income), _fraction(fraction), _voices(voices)
     {
         assert(invariant());
     }
 
-    Candidate(const char *fio, long unsigned int age, long unsigned int income, const char *fraction, long unsigned int voices)
+    Candidate(const char *name, const char *surname, long unsigned int age, long unsigned int income, const char *fraction, long unsigned int voices)
     {
-        _fio = string(fio);
+        _name = string(name);
+        _surname = string(surname);
         _age = age;
         _income = income;
         _fraction = Converter::toFraction(string(fraction));
@@ -86,7 +88,8 @@ public:
         assert(invariant());
     }
 
-    const string &getFio() const { return _fio; }
+    const string &getName() const { return _name; }
+    const string &getSurname() const { return _surname; }
     const uint getAge() const { return _age; }
     const uint getIncome() const { return _income; }
     const Fraction getFraction() const { return _fraction; }
@@ -94,7 +97,8 @@ public:
 
     virtual bool write(ostream &os) override
     {
-        writeString(os, _fio);
+        writeString(os, _name);
+        writeString(os, _surname);
         writeNumber(os, _age);
         writeNumber(os, _income);
         writeString(os, Converter::toString(_fraction));
@@ -109,13 +113,14 @@ class ItemCollector : public ACollector
 public:
     virtual shared_ptr<ICollectable> read(istream &is) override
     {
-        string fio = readString(is, MAX_FIO_LENGTH);
+        string name = readString(is, MAX_FIO_FIELD_LENGTH);
+        string surname = readString(is, MAX_FIO_FIELD_LENGTH);
         uint age = readNumber<uint>(is);
         uint income = readNumber<uint>(is);
         Fraction fraction = Converter::toFraction(readString(is, MAX_FRACTION_LENGTH));
         uint voices = readNumber<uint>(is);
 
-        return make_shared<Candidate>(fio, age, income, fraction, voices);
+        return make_shared<Candidate>(name, surname, age, income, fraction, voices);
     }
 };
 
@@ -165,12 +170,12 @@ bool performCommand(const vector<string> &args, ItemCollector &col)
 
     if (args[0] == "a" || args[0] == "add")
     {
-        if (args.size() != 6)
+        if (args.size() != 7)
         {
             cerr << "Некорректное количество аргументов команды add" << endl;
             return false;
         }
-        col.addItem(make_shared<Candidate>(args[1].c_str(), stoul(args[2]), stoul(args[3]), args[4].c_str(), stoul(args[5])));
+        col.addItem(make_shared<Candidate>(args[1].c_str(), args[2].c_str(), stoul(args[3]), stoul(args[4]), args[5].c_str(), stoul(args[6])));
         return true;
     }
 
@@ -188,12 +193,12 @@ bool performCommand(const vector<string> &args, ItemCollector &col)
 
     if (args[0] == "u" || args[0] == "update")
     {
-        if (args.size() != 7)
+        if (args.size() != 8)
         {
             cerr << "Некорректное количество аргументов команды update" << endl;
             return false;
         }
-        col.updateItem(stoul(args[1]), make_shared<Candidate>(args[2].c_str(), stoul(args[3]), stoul(args[4]), args[5].c_str(), stoul(args[6])));
+        col.updateItem(stoul(args[1]), make_shared<Candidate>(args[2].c_str(), args[3].c_str(), stoul(args[4]), stoul(args[5]), args[6].c_str(), stoul(args[7])));
         return true;
     }
 
@@ -213,7 +218,8 @@ bool performCommand(const vector<string> &args, ItemCollector &col)
             if (!col.isRemoved(i))
             {
                 cout << "[" << i << "] "
-                     << item.getFio() << " "
+                     << item.getName() << " "
+                     << item.getSurname() << " "
                      << item.getAge() << " "
                      << item.getIncome() << " "
                      << Converter::toString(item.getFraction()) << " "
